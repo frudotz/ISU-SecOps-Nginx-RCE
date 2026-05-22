@@ -45,6 +45,7 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 
 # Config dosyasını yeni klasör yolundan alıyoruz
 COPY hedef/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY hedef/website /etc/nginx/html/website
 
 ENV ASAN_OPTIONS="detect_leaks=0,halt_on_error=0,log_path=/var/log/nginx/asan"
 
