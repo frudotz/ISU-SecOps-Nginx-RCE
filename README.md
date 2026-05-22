@@ -62,6 +62,13 @@ Mock Website, saldırganların hedeflediği "ISU SecOps" enterprise ağ geçidin
 Saldırı betiklerinin çalıştırılması ve Nginx sunucusundaki QUIC Buffer Overflow zafiyetinin tetiklenme anı:
 ![CLI Demo](assets/demo/cli_demo.png)
 
+### 🎥 Canlı Demo Videosu (Sistem İşleyişi)
+Projenin uçtan uca çalıştırılması, zafiyetin sömürülmesi ve hedefin düşürülme anını gösteren canlı demo videosu:
+
+<video src="assets/demo/live-demo.mp4" controls="controls" style="max-width: 100%;"></video>
+
+*(Eğer video tarayıcı veya Markdown okuyucunuzda oynamıyorsa, `assets/demo/live-demo.mp4` yolundan yerel olarak izleyebilirsiniz.)*
+
 ---
 
 ## 🌐 Üretim Benzetimi (Mock Website)
@@ -100,12 +107,12 @@ Gerekli Python bağımlılıklarını kurduktan sonra saldırı betiklerini baş
 
 **Keşif Aşaması (Recon):**
 ```bash
-python3 saldiri/01_recon.py 10.13.37.10 443
+docker exec fuzzer_node python3 /fuzzer/01_recon.py 10.13.37.10 443
 ```
 
 **DoS Saldırısı:**
 ```bash
-python3 saldiri/03_dos.py 10.13.37.10 443 10
+docker exec fuzzer_node python3 /fuzzer/03_dos.py 10.13.37.10 443 10
 ```
 
 *Not: Hata (Crash) tespitlerini görmek için Nginx loglarını kontrol edebilirsiniz:*

@@ -9,6 +9,10 @@ services:
     networks:
       quic_lab:
         ipv4_address: 10.13.37.10
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -23,6 +27,8 @@ services:
     networks:
       quic_lab:
         ipv4_address: 10.13.37.20
+    volumes:
+      - ./saldiri:/fuzzer
     tty: true
 
   monitor:
