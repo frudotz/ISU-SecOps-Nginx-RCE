@@ -3,7 +3,8 @@ version: '3.8'
 services:
   target:
     build:
-      context: ./target
+      context: .
+      dockerfile: ./hedef/nginx/Dockerfile
     container_name: target_nginx
     networks:
       quic_lab:
@@ -17,7 +18,7 @@ services:
 
   fuzzer:
     build:
-      context: ./fuzzer
+      context: ./saldiri
     container_name: fuzzer_node
     networks:
       quic_lab:
@@ -26,7 +27,7 @@ services:
 
   monitor:
     build:
-      context: ./monitor
+      context: ./hedef/monitor
     container_name: monitor_node
     networks:
       quic_lab:
