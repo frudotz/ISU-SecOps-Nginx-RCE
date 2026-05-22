@@ -1,164 +1,155 @@
-# ⚡ ISU-SecOps — CVE-2026-0211
+# ISU-SecOps Nginx QUIC RCE Lab
 
-## Eğitim Amaçlı Saldırı Laboratuvarı
+Modern web sunucularındaki (Nginx) HTTP/3 ve QUIC protokolü zafiyetlerini analiz etmek, tetiklemek (Exploitation) ve savunmak (Mitigation) amacıyla geliştirilmiş kapsamlı bir eğitim laboratuvarıdır.
 
-> **Pre-Auth RCE via Nginx QUIC `dcid_len` Heap Buffer Overflow**
-> CVSS 9.8 — Critical
+Bu proje, gerçek dünya saldırı senaryolarını hedefleyen, RCE ve DoS testleri içeren modüler bir "Saldırı ve Savunma" çözümü olarak tasarlanmıştır.
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│  Crafted UDP Packet → Nginx QUIC Parser → dcid_len Manipulation│
-│  → Misaligned Address Dereference / Heap Buffer Overflow       │
-│  → FULL SERVER COMPROMISE / DENIAL OF SERVICE                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)
+![C](https://img.shields.io/badge/C-Patch-00599C?logo=c&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker&logoColor=white)
+![Security](https://img.shields.io/badge/Security-Analyzer-red)
+![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
+![CI](https://github.com/frudotz/ISU-SecOps-Nginx-RCE/actions/workflows/security_test.yml/badge.svg)
 
 ---
 
-## ⚠️ YASAL UYARI / DISCLAIMER
-
-> **🔴 Bu proje yalnızca EĞİTİM ve ARAŞTIRMA amaçlıdır.**
->
-> - Buradaki araçlar **yalnızca kendi kontrol ettiğiniz sistemlerde** kullanılmalıdır
-> - Yetkisiz sistemlere saldırı **Türk Ceza Kanunu madde 243-245** kapsamında suçtur
-> - Proje sahipleri araçların kötüye kullanımından **sorumluluk kabul etmez**
-> - Tüm testler izole docker (bridge network) ortamında yapılmalıdır
+| ![ISU](https://www.istinye.edu.tr/sites/default/files/2025-07/isu_logo_tr-1.svg) | Sızma Testi Proje Ödevi |
+|---|---|
+| **Öğrenci Adı** | Hamza Arda Karabacak |
+| **Öğrenci No.** | 2520191010 |
+| **Öğretim Gör. (Danışman)** | Keyvan Arasteh Abbasabad |
+| **Ders Kodu & Adı** | BGT006 Sızma Testi |
 
 ---
 
-## 📋 CVE Bilgileri
+## 📚 İçindekiler
 
-| Alan | Detay |
-|------|-------|
-| **CVE** | CVE-2026-0211 (Hipotetik) |
-| **CVSS** | 9.8 / Critical |
-| **Tür** | Heap Buffer Overflow / Out-of-bounds Write |
-| **Kimlik Doğrulama** | Gerekmez (Pre-Auth) |
-| **Etkilenen** | Nginx 1.25.3 (HTTP/3 QUIC modülü aktifken) |
-| **Yamalı** | Özel C-Patch (`CVE-2026-0211-defense.patch`) |
-| **Hedef Platform** | Linux / Docker |
-
----
-
-## 📁 Proje Yapısı
-
-```text
-ISU-SecOps/
-│
-├── 📄 README.md               # Bu dosya
-├── 📄 docker-compose.yml      # Laboratuvar ağ topolojisi
-│
-├── 📂 hedef/                  # 🎯 Savunmasız Hedef Sistem
-│   ├── nginx/
-│   │   ├── Dockerfile         # Nginx derleme ve yama adımları
-│   │   └── nginx.conf         # QUIC & HTTP/3 yapılandırması
-│   └── website/               # Mock "ISU SecOps" Kurumsal Web Sitesi
-│       ├── index.html
-│       └── style.css
-│
-├── 📂 saldiri/                # 🗡️ Saldırı Araçları (Python)
-│   ├── 01_recon.py            # Keşif ve HTTP/3 tespit scripti
-│   ├── 03_dos.py              # Denial of Service (DoS) scripti
-│   └── payloads/              # RCE ve DoS için JSON şablonları
-│       ├── flight_dos.json
-│       └── flight_rce.json
-│
-├── 📂 savunma/                # 🛡️ Savunma & Yama
-│   ├── CVE-2026-0211-defense.patch # Orijinal Nginx C-Yaması
-│   └── patch_guide.md         # Yamanın analizi
-│
-├── 📂 dokumantasyon/          # 📚 Akademik Raporlar
-│   ├── 01_tehdit_analizi.md
-│   ├── 02_fuzzing_metodolojisi.md
-│   ├── 03_crash_triage.md
-│   ├── 04_mitigation_stratejileri.md
-│   └── 05_performans_analizi.md
-│
-└── 📂 .github/                # 🤖 CI/CD DevOps
-    └── workflows/
-        └── security_test.yml  # Otomatik ASAN/UBSAN güvenlik testi
-```
+- [🚀 Özellikler](#-özellikler)
+- [🌐 Üretim Benzetimi (Mock Website)](#-üretim-benzetimi-mock-website)
+- [🧠 Mimari Yaklaşım](#-mimari-yaklaşım)
+- [⚙️ Kullanım](#️-kullanım)
+  - [Docker Ortamı](#docker-ortamı)
+  - [Saldırı Araçları](#saldırı-araçları)
+- [🛡️ Savunma ve Yama](#️-savunma-ve-yama)
+- [🧪 CI/CD Testing](#-cicd-testing)
+- [📁 Çıktılar ve Dokümantasyon](#-çıktılar-ve-dokümantasyon)
+- [⚠️ Yasal Uyarı / Limitations](#️-yasal-uyarı--limitations)
+- [🧾 Versiyon](#-versiyon)
+- [📌 Not](#-not)
 
 ---
 
-## 🚀 Hızlı Başlangıç
+## 🚀 Özellikler
 
-### Gereksinimler
+* **CVE-2026-0211 Simülasyonu:** Nginx QUIC parser modülündeki `dcid_len` tabanlı Heap Buffer Overflow zafiyeti.
+* **Keşif (Recon):** Hedef sistemde HTTP/3 (QUIC) taraması ve tespiti (`01_recon.py`).
+* **Hizmet Reddi (DoS):** Asimetrik asenkron istekler ile memory/CPU tüketim saldırısı (`03_dos.py`).
+* **Kaynak Kodu Yamalama:** Zafiyetli C dosyası için Bounds Checking yaması (`CVE-2026-0211-defense.patch`).
+* **Gelişmiş Mitigasyonlar:** eBPF (XDP) tabanlı paket düşürme ve ModSecurity WAF kuralları analizi.
+* **İzole Laboratuvar:** Docker Compose ile 10.13.37.0/24 internal bridge network.
 
-| Araç | Amaç |
-|------|------|
-| Docker & Docker Compose | Hedef ve Fuzzer ağını kurmak |
-| Python 3.x | Saldırı araçlarını çalıştırmak |
-| Git | Repoyu klonlamak |
+---
 
-### 1. Laboratuvarı Kur ve Çalıştır
+## 🌐 Üretim Benzetimi (Mock Website)
+
+Hedef Nginx sunucusu, zafiyetin gerçek dünyadaki etkisini göstermek adına interaktif ve karanlık temalı bir **"Enterprise Security Gateway"** web arayüzüne ev sahipliği yapmaktadır. Bu sayede sadece bir "It Works" sayfası değil, kurumsal görünümlü bir üretim (production) sunucusuna sızma testi gerçekleştirilir.
+
+---
+
+## 🧠 Mimari Yaklaşım
+
+Proje 4 ana katmandan oluşur:
+
+* **Hedef (Target) Katmanı:** Zafiyet barındıran Nginx 1.25.3 Docker container'ı ve mock website.
+* **Saldırı (Attack) Katmanı:** Python tabanlı QUIC fuzzer, DoS ve Payload (JSON) modülleri.
+* **Savunma (Defense) Katmanı:** Orijinal C yamaları ve Kernel tabanlı eBPF çözüm önerileri.
+* **Dokümantasyon Katmanı:** Tehdit analizi, fuzzer metodolojisi, crash triage ve benchmarking raporları.
+
+Bu yapı sayesinde sistem modüler, eğitici ve gerçeğe yakın bir zafiyet araştırma (VulnDev) deneyimi sunar.
+
+---
+
+## ⚙️ Kullanım
+
+### Docker Ortamı
+
+Projeyi kendi bilgisayarınızda (localhost) kurmak için Docker Compose kullanılır:
 
 ```bash
-# Projeyi klonla
-git clone https://github.com/frudotz/ISU-SecOps-Nginx-RCE.git
-cd ISU-SecOps-Nginx-RCE
-
-# İzole ağı (10.13.37.0/24) ve sistemleri ayağa kaldır
 docker compose up -d --build
 ```
+*Bu komut; `target_nginx` konteynerini 10.13.37.10 IP adresiyle ayağa kaldırır ve HTTP/3 desteğiyle çalıştırır.*
 
-### 2. Saldırı Aracını Çalıştır (DoS)
+### Saldırı Araçları
 
+Gerekli Python bağımlılıklarını kurduktan sonra saldırı betiklerini başlatabilirsiniz:
+
+**Keşif Aşaması (Recon):**
 ```bash
-# Recon aracı ile HTTP/3 kontrolü yap
 python3 saldiri/01_recon.py 10.13.37.10 443
+```
 
-# DoS saldırısını başlat
+**DoS Saldırısı:**
+```bash
 python3 saldiri/03_dos.py 10.13.37.10 443 10
 ```
 
-### 3. Logları ve Crash'i İncele
-
+*Not: Hata (Crash) tespitlerini görmek için Nginx loglarını kontrol edebilirsiniz:*
 ```bash
-# Nginx ASAN loglarına bak
 docker exec target_nginx cat /var/log/nginx/asan.7
 ```
 
 ---
 
-## 🗡️ Saldırı Zinciri
+## 🛡️ Savunma ve Yama
 
-### Aşama 1: Keşif (Reconnaissance)
-- Hedef Nginx'in UDP 443 portunda HTTP/3 (QUIC) dinleyip dinlemediği kontrol edilir.
-- Fuzzer tabanlı ağ testleri ile açık port onaylanır (`01_recon.py`).
+Bu laboratuvar sadece saldırmayı değil, savunmayı da öğretir. Nginx kaynak koduna aşağıdaki gibi bir sınır kontrolü (Bounds Checking) eklenmiştir:
 
-### Aşama 2: Zafiyet Tetikleme & Crash Triage
-- Nginx `ngx_event_quic_transport.c` dosyasındaki eksik kontrol sebebiyle malformed `dcid_len=255` UDP paketi gönderilir (`03_dos.py`).
-- C dilindeki `uint32_t` tip dönüşümünden kaynaklanan "Misaligned Address Dereference" veya Memory Corruption tetiklenir.
-
----
-
-## 🛡️ Savunma Rehberi
-
-### Acil Eylemler
-Zafiyetli `ngx_quic_parse_packet` fonksiyonuna katı `Bounds Checking` (sınır kontrolü) eklenmelidir. Bu işlem `savunma/CVE-2026-0211-defense.patch` ile derleme sırasında uygulanmıştır.
-
-### Gelişmiş Sertleştirme (Defense in Depth)
-- ✅ eBPF (XDP) ile Kernel seviyesinde malformed paket düşürme (Dokümanlara bakınız).
-- ✅ QUIC paket başlıklarını analiz eden WAF (ModSecurity) entegrasyonu.
-- ✅ ASAN/UBSAN derlemeleriyle CI/CD otomasyonu üzerinden sürekli güvenlik testi (Bkz: `security_test.yml`).
+```c
+if (idlen > NGX_QUIC_CID_LEN_MAX || idlen == 0xFF) {
+    ngx_log_error(NGX_LOG_INFO, c->log, 0, "quic invalid dcid_len detected");
+    return NGX_DECLINED;
+}
+```
+*Detaylı C-patch içeriği `savunma/CVE-2026-0211-defense.patch` dosyasında bulunabilir.*
 
 ---
 
-## 🗺️ Akademik Raporlar
+## 🧪 CI/CD Testing
 
-Detaylı teknik analiz ve performans sonuçları için `dokumantasyon/` klasöründeki dosyaları inceleyebilirsiniz:
+Proje, GitHub Actions üzerinde tam otomatik DevSecOps pipeline'ına sahiptir:
+* Kod her pushlandığında Docker ortamı Actions runner üzerinde ayağa kalkar.
+* Fuzzer testleri otomatik çalıştırılır.
+* AddressSanitizer (ASAN) logları taranarak yamanın çalışıp çalışmadığı denetlenir (`.github/workflows/security_test.yml`).
+
+---
+
+## 📁 Çıktılar ve Dokümantasyon
+
+Akademik seviyedeki tüm araştırma çıktıları `dokumantasyon/` klasörü altındadır:
+
 1. Tehdit Analizi
 2. Fuzzing Metodolojisi
-3. Crash Triage & Kök Neden (Root Cause)
-4. Mitigasyon Stratejileri
-5. Performans ve Benchmarking Analizi (O(1) Overhead)
+3. Crash Triage (Root Cause Analysis)
+4. İleri Mitigasyon Stratejileri (WAF/eBPF)
+5. Performans ve Benchmarking Tablosu
 
 ---
 
-## 📄 Lisans
+## ⚠️ Yasal Uyarı / Limitations
 
-Bu proje akademik ve eğitim amaçlıdır.
+* **Sadece İzin Verilen Ortamlar:** Buradaki araçlar yalnızca kendi kontrol ettiğiniz izole Docker sistemlerinde kullanılmalıdır.
+* **Sorumluluk Reddi:** Yetkisiz sistemlere karşı yapılan hiçbir eylemden proje sahipleri sorumlu tutulamaz.
+* Sistem gerçek bir Zero-Day yerine (CVE-2026-0211 hipotetik) Nginx QUIC mantığının eğitim amaçlı zaafiyete uğratılmış özel bir versiyonu üzerine kuruludur.
 
 ---
-*ISU SecOps Lab — Nginx QUIC RCE Eğitim Ortamı — 2026*
+
+## 🧾 Versiyon
+
+v1.0.0
+
+---
+
+## 📌 Not
+
+Bu proje, Sızma Testi, Güvenlik Zafiyeti Keşfi (VulnDev) ve DevSecOps süreçlerinin temel prensiplerini akademik bir yaklaşımla göstermek amacıyla geliştirilmiştir.
