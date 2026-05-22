@@ -18,13 +18,13 @@ jobs:
 
     - name: Build Target Nginx Container
       run: |
-        docker-compose build target
+        docker compose build target
       
     - name: Run Fuzzer Tests against Target
       run: |
-        docker-compose up -d target
-        docker-compose up fuzzer
-        docker-compose down
+        docker compose up -d target
+        docker compose up fuzzer
+        docker compose down
 
     - name: Check ASAN/UBSAN Logs
       run: |
