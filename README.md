@@ -50,6 +50,20 @@ Bu proje, gerçek dünya saldırı senaryolarını hedefleyen, RCE ve DoS testle
 
 ---
 
+## 🎬 Canlı Demo ve Ekran Görüntüleri
+
+Projenin çalışan halini yansıtan konsept ekran görüntüleri aşağıdadır:
+
+### 🖥️ Siber Güvenlik Arayüzü (Web GUI)
+Mock Website, saldırganların hedeflediği "ISU SecOps" enterprise ağ geçidini canlandırır:
+![Web GUI Demo](assets/demo/web_demo.png)
+
+### 👨‍💻 Hacker Uçbirimi (CLI / Exploit Execution)
+Saldırı betiklerinin çalıştırılması ve Nginx sunucusundaki QUIC Buffer Overflow zafiyetinin tetiklenme anı:
+![CLI Demo](assets/demo/cli_demo.png)
+
+---
+
 ## 🌐 Üretim Benzetimi (Mock Website)
 
 Hedef Nginx sunucusu, zafiyetin gerçek dünyadaki etkisini göstermek adına interaktif ve karanlık temalı bir **"Enterprise Security Gateway"** web arayüzüne ev sahipliği yapmaktadır. Bu sayede sadece bir "It Works" sayfası değil, kurumsal görünümlü bir üretim (production) sunucusuna sızma testi gerçekleştirilir.
