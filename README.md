@@ -56,16 +56,16 @@ Projenin çalışan halini yansıtan konsept ekran görüntüleri aşağıdadır
 
 ### 🖥️ Siber Güvenlik Arayüzü (Web GUI)
 Mock Website, saldırganların hedeflediği "ISU SecOps" enterprise ağ geçidini canlandırır:
-![Web GUI Demo](assets/demo/web_demo.png)
+<img src="assets/demo/web_demo.png" width="500" alt="Web GUI Demo">
 
 ### 👨‍💻 Hacker Uçbirimi (CLI / Exploit Execution)
 Saldırı betiklerinin çalıştırılması ve Nginx sunucusundaki QUIC Buffer Overflow zafiyetinin tetiklenme anı:
-![CLI Demo](assets/demo/cli_demo.png)
+<img src="assets/demo/cli_demo.png" width="500" alt="CLI GUI Demo">
 
 ### 🎥 Canlı Demo Videosu (Sistem İşleyişi)
 Projenin uçtan uca çalıştırılması, zafiyetin sömürülmesi ve hedefin düşürülme anını gösteren canlı demo videosu:
 
-<video src="assets/demo/live-demo.mp4" controls="controls" style="max-width: 100%;"></video>
+<img src="assets/demo/live-demo.webp" width="500" alt="Web GUI Demo Video">
 
 *(Eğer video tarayıcı veya Markdown okuyucunuzda oynamıyorsa, `assets/demo/live-demo.mp4` yolundan yerel olarak izleyebilirsiniz.)*
 
