@@ -5,7 +5,7 @@
 
   # ISU-SecOps Nginx QUIC RCE Lab
 
-  ![GitHub](https://img.shields.io/badge/GitHub-Private-red?style=flat-square&logo=github)
+  ![GitHub](https://img.shields.io/badge/GitHub-Public-blue?style=flat-square&logo=github)
   ![Dil](https://img.shields.io/badge/Dil-Python-blue?style=flat-square)
   ![Durum](https://img.shields.io/badge/Durum-Devam%20Ediyor-yellow?style=flat-square)
   ![Ders](https://img.shields.io/badge/Ders-BGT006-purple?style=flat-square)
