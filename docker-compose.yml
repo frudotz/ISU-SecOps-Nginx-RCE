@@ -4,7 +4,7 @@ services:
   target:
     build:
       context: .
-      dockerfile: ./hedef/nginx/Dockerfile
+      dockerfile: ./src/hedef/nginx/Dockerfile
     container_name: target_nginx
     networks:
       quic_lab:
@@ -18,22 +18,22 @@ services:
     security_opt:
       - seccomp=unconfined
     volumes:
-      - ./target_logs:/var/log/nginx
+      - ./src/target_logs:/var/log/nginx
 
   fuzzer:
     build:
-      context: ./saldiri
+      context: ./src/saldiri
     container_name: fuzzer_node
     networks:
       quic_lab:
         ipv4_address: 10.13.37.20
     volumes:
-      - ./saldiri:/fuzzer
+      - ./src/saldiri:/fuzzer
     tty: true
 
   monitor:
     build:
-      context: ./hedef/monitor
+      context: ./src/hedef/monitor
     container_name: monitor_node
     networks:
       quic_lab:
