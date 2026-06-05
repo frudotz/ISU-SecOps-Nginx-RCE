@@ -1,29 +1,48 @@
-# ISU-SecOps Nginx QUIC RCE Lab
+<div align="center">
+  <a href="https://istinye.edu.tr">
+    <img src="https://www.istinye.edu.tr/sites/default/files/2025-07/isu_logo_tr-1.svg" alt="İstinye Üniversitesi" width="180"/>
+  </a>
 
-Modern web sunucularındaki (Nginx) HTTP/3 ve QUIC protokolü zafiyetlerini analiz etmek, tetiklemek (Exploitation) ve savunmak (Mitigation) amacıyla geliştirilmiş kapsamlı bir eğitim laboratuvarıdır.
+  # ISU-SecOps Nginx QUIC RCE Lab
 
-Bu proje, gerçek dünya saldırı senaryolarını hedefleyen, RCE ve DoS testleri içeren modüler bir "Saldırı ve Savunma" çözümü olarak tasarlanmıştır.
+  ![GitHub](https://img.shields.io/badge/GitHub-Private-red?style=flat-square&logo=github)
+  ![Dil](https://img.shields.io/badge/Dil-Python-blue?style=flat-square)
+  ![Durum](https://img.shields.io/badge/Durum-Devam%20Ediyor-yellow?style=flat-square)
+  ![Ders](https://img.shields.io/badge/Ders-BGT006-purple?style=flat-square)
+</div>
 
-![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python&logoColor=white)
-![C](https://img.shields.io/badge/C-Patch-00599C?logo=c&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-Supported-2496ED?logo=docker&logoColor=white)
-![Security](https://img.shields.io/badge/Security-Analyzer-red)
-![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
-![CI](https://github.com/frudotz/ISU-SecOps-Nginx-RCE/actions/workflows/security_test.yml/badge.svg)
+## Danışman Bilgisi
 
----
-
-| ![ISU](https://www.istinye.edu.tr/sites/default/files/2025-07/isu_logo_tr-1.svg) | Sızma Testi Proje Ödevi |
+| | |
 |---|---|
-| **Öğrenci Adı** | Hamza Arda Karabacak |
-| **Öğrenci No.** | 2520191010 |
-| **Öğretim Gör. (Danışman)** | Keyvan Arasteh Abbasabad |
-| **Ders Kodu & Adı** | BGT006 Sızma Testi |
+| **Ad Soyad** | Keyvan Arasteh |
+| **GitHub** | @keyvanarasteh |
+| **E-posta** | keyvan.arasteh@istinye.edu.tr |
+| **LinkedIn** | keyvanarasteh |
+| **Web Sitesi** | qline.tech |
+
+## Öğrenci Bilgisi
+
+| | |
+|---|---|
+| **Ad Soyad** | Hamza Arda Karabacak |
+| **Öğrenci No** | 2520****1010 |
+
+## Ders Bilgileri
+
+| | |
+|---|---|
+| **Ders Adı** | Sızma Testi |
+| **Ders Kodu** | BGT006 |
+| **Kredi** | 3 AKTS |
+| **Ön Koşullar** | Ağ Temelleri, Linux CLI |
+| **Dönem** | 2025-2026 Bahar |
 
 ---
 
 ## 📚 İçindekiler
 
+- [🗂 Repo Yapısı](#-repo-yapısı)
 - [🚀 Özellikler](#-özellikler)
 - [🌐 Üretim Benzetimi (Mock Website)](#-üretim-benzetimi-mock-website)
 - [🧠 Mimari Yaklaşım](#-mimari-yaklaşım)
@@ -36,6 +55,30 @@ Bu proje, gerçek dünya saldırı senaryolarını hedefleyen, RCE ve DoS testle
 - [⚠️ Yasal Uyarı / Limitations](#️-yasal-uyarı--limitations)
 - [🧾 Versiyon](#-versiyon)
 - [📌 Not](#-not)
+
+---
+
+## 🗂 Repo Yapısı
+
+```text
+.
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── LICENSE
+├── README.md
+├── ROADMAP.md
+├── assets/
+├── docs/
+│   ├── modules/
+│   ├── references/
+│   └── research/
+└── src/
+    ├── hedef/
+    ├── saldiri/
+    └── savunma/
+```
 
 ---
 

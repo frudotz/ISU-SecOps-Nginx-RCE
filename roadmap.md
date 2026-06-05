@@ -1,33 +1,40 @@
-# Araştırma ve Geliştirme Yol Haritası (Roadmap)
+# Araştırma ve Geliştirme Yol Haritası (ROADMAP)
 
 > [!NOTE]
-> Bu doküman, araştırma projesinin yazılım geliştirme (fuzzer, patch, simülasyon betikleri) tarafına yönelik çalışma maddelerini listelemektedir.
+> "Önce anla, sonra kodla." Her problemi küçük, sıralı parçalara böl. Bir dedektif gibi düşün: gözlemle, ham veriyi çevir, desenleri tespit et, raporla.
 
-## Faz 1: Laboratuvar ve Çevre Kurulumu
-- [ ] **Docker Topolojisinin İnşası:** Victim (Nginx), Attacker (Fuzzer) ve Monitor node'ları için Dockerfile ve docker-compose konfigürasyonlarının hazırlanması.
-- [ ] **Ağ Segmentasyonu:** Dışa kapalı (air-gapped) bir bridge ağın kurulması.
-- [ ] **Nginx Kaynak Kodu Hazırlığı:** Nginx kaynak kodunun indirilmesi ve HTTP/3 desteğiyle ASAN/UBSAN (`-fsanitize=address,undefined`) kullanılarak derlenmesi.
-- [ ] **Gözlem Araçlarının Kurulumu:** tcpdump ve Valgrind ortamlarının hazırlanması.
+## Faz 0: Yazmadan Önce Anla
+- [ ] Tehdit analizi ve zafiyet teorisinin kavranması (Nginx QUIC dcid_len parsing)
+- [ ] Heap-buffer-overflow ve memory corruption temellerinin incelenmesi
+- [ ] Savunma (mitigation) ve patch geliştirme konseptlerinin araştırılması
 
-## Faz 2: Güvenli Fuzzer Geliştirme
-- [ ] **Packet Corpus Oluşturma:** Wireshark veya mevcut araçlarla geçerli QUIC Initial, Handshake paketlerinin (seed corpus) elde edilmesi.
-- [ ] **LibFuzzer Harness Geliştirme:** Nginx'in `ngx_quic_parse_packet` fonksiyonunu izole şekilde test edecek in-memory C/C++ harness kodunun yazılması.
-- [ ] **AFL++ Entegrasyonu:** (Opsiyonel) Nginx'in ağ üzerinden beslenerek blackbox/greybox tarzında fuzz edilmesi için wrapper yazımı.
-- [ ] **Fuzzing Kampanyası:** Fuzzer'ların başlatılması ve malformed (özellikle hatalı CID uzunluklu) paketlerin hedefe basılması.
+## Faz 1: Araştırma ve Keşif
+*Not: Tüm araştırma notları ve çıktılar `docs/research/` dizininde toplanmıştır.*
+- [ ] Wireshark veya mevcut araçlarla geçerli QUIC Initial, Handshake paketlerinin incelenmesi
+- [ ] Fuzzing metodolojisi ve LibFuzzer/AFL++ kavramlarının araştırılması
+- [ ] Crash triage adımlarının detaylandırılması
 
-## Faz 3: Kontrollü Simülasyon ve Crash Triage
-- [ ] **Crash Triage:** Fuzzer tarafından bulunan ASAN crash loglarının incelenerek heap-buffer-overflow zafiyetinin tespit edilmesi.
-- [ ] **Reproducer Script Geliştirme:** Python ve Scapy kullanılarak zafiyeti ağ üzerinden stabil şekilde tetikleyen minimalist bir "crash reproducer" betiği yazılması.
-- [ ] **Hafıza Analizi (Memory Diagnostics):** GDB ve ASAN çıktıları ile taşan buffer'ın ve ezilen (corrupted) heap alanlarının haritalanması.
+## Faz 2: Ortam Kurulumu
+- [ ] Docker topolojisinin inşası: Victim (Nginx), Attacker (Fuzzer) ve Monitor node'ları
+- [ ] Dışa kapalı (air-gapped) bridge ağ kurulumu (10.13.37.0/24)
+- [ ] Nginx kaynak kodunun indirilmesi ve ASAN/UBSAN ile derlenmesi
+- [ ] tcpdump ve Valgrind gibi gözlem araçlarının hazırlanması
 
-## Faz 4: Savunma Yaması Geliştirme
-- [ ] **Güvenli Parsing Yaması (Patch):** Nginx `ngx_event_quic.c` dosyasına `dcid_len` için katı bounds checking eklenmesi.
-- [ ] **Yamanın Entegrasyonu:** Değiştirilen kaynak kodun tekrar derlenmesi.
+## Faz 3: Uygulama
+- [ ] Modül 1: Fuzzer/Harness geliştirme ve Nginx ağ beslemesinin entegrasyonu
+- [ ] Modül 2: Fuzzing kampanyası başlatılarak hatalı (malformed) paketlerin hedefe gönderilmesi
+- [ ] Modül 3: Python ve Scapy kullanılarak zafiyeti tetikleyen crash reproducer betiğinin yazılması
+- [ ] Modül 4: Nginx `ngx_event_quic.c` dosyasına `dcid_len` için katı bounds checking yamasının uygulanması
 
-## Faz 5: Mitigasyon Doğrulama (Validation)
-- [ ] **Regression Testing:** Fuzzer'ın bulduğu tüm crash payload'larının yamalı sisteme gönderilmesi ve Nginx'in stabil kaldığının (crash olmadığının) teyit edilmesi.
-- [ ] **Performans Testleri:** Eklenen bounds-check kontrollerinin Nginx'in paket işleme kapasitesine (RPS) negatif etkisi olup olmadığının ölçülmesi.
+## Faz 4: Test ve Raporlama
+- [ ] GDB ve ASAN çıktıları ile hafıza analizinin gerçekleştirilmesi
+- [ ] Fuzzer'ın bulduğu tüm crash payload'larının yamalı sisteme gönderilmesi (Regression Testing)
+- [ ] Eklenen bounds-check kontrollerinin Nginx performansına etkisinin ölçülmesi (Benchmarking)
+- [ ] Metriklerin toplanıp bulguların analiz edilerek raporlanması
 
-## Faz 6: Akademik Çıktılar
-- [ ] **Metriklerin Toplanması:** Fuzzing coverage verileri ve performans test sonuçlarının derlenmesi.
-- [ ] **Raporun Yazılması:** Metodolojinin, yamanın ve simülasyon çıktılarının akademik bir doküman haline getirilmesi.
+## Faz 5: Teslim Kontrol Listesi
+- [ ] README.md ve belgeleme standartlarının doğrulanması
+- [ ] Dockerfile, docker-compose.yml ve .env.example dosyalarının kontrolü
+- [ ] Kod geçmişinin, commit'lerin ve PR (Pull Request) kalitesinin incelenmesi
+- [ ] Danışman hocanın (keyvanarasteh) Github reposuna Read erişimiyle Collaborator olarak eklenmesi
+- [ ] Gereksiz veya büyük binary dosyalarının repo dışında tutulması (.gitignore kontrolü)

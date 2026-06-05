@@ -21,3 +21,5 @@ Thumbs.db
 # Nginx Kaynak Kodları (Eğer lokale inerse)
 *.tar.gz
 nginx-*/
+node_modules/
+template/
